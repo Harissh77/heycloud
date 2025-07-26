@@ -1,0 +1,12 @@
+FROM mysql:8.0
+
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=mydb
+ENV MYSQL_USER=harish
+ENV MYSQL_PASSWORD=harish1234
+
+# Copy SQL scripts into the Docker container's init directory
+COPY create.sql /docker-entrypoint-initdb.d/01_create.sql
+COPY insert.sql /docker-entrypoint-initdb.d/02_insert.sql
+
+EXPOSE 3306

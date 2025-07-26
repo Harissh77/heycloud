@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt requirements.txt
+
+# More reliable pip install with retries and timeout
+RUN pip install --no-cache-dir --default-timeout=100 --retries=10 -r requirements.txt
+
+COPY src/html/app.py .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+

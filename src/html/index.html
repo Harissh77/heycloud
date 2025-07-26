@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MySQL Tables Viewer</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  #tables, #table-data { display: inline-block; vertical-align: top; width: 45%; margin-right: 5%; }
+  .box {
+    border: 1px solid #333; 
+    padding: 15px; 
+    margin: 10px 0; 
+    cursor: pointer; 
+    background-color: #eee; 
+    border-radius: 6px;
+    transition: background-color 0.3s;
+  }
+  .box:hover { background-color: #ccc; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+  th, td { border: 1px solid #999; padding: 8px; text-align: left; }
+  th { background-color: #ddd; }
+  #table-data { max-height: 600px; overflow: auto; }
+</style>
+</head>
+<body>
+
+<h2>Tables</h2>
+<div id="tables"></div>
+
+<h2>Table Contents</h2>
+<div id="table-data">Click a table to view data.</div>
+
+<script>
+  const tablesDiv = document.getElementById('tables');
+  const tableDataDiv = document.getElementById('table-data');
+
+  // Fetch list of tables
+  fetch('http://127.0.0.1:5000/tables')
+    .then(res => res.json())
+    .then(tables => {
+      tables.forEach(table => {
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.textContent = table;
+        box.addEventListener('click', () => loadTableData(table));
+        tablesDiv.appendChild(box);
+      });
+    })
+    .catch(err => {
+      tablesDiv.textContent = 'Error loading tables.';
+      console.error(err);
+    });
+
+  function loadTableData(tableName) {
+    tableDataDiv.textContent = 'Loading...';
+
+    fetch(`http://127.0.0.1:5000/table-data/${tableName}`)
+      .then(res => res.json())
+      .then(rows => {
+        if (!rows.length) {
+          tableDataDiv.textContent = 'No data found in this table.';
+          return;
+        }
+
+        // Create table
+        const htmlTable = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+
+        // Table headers
+        const headers = Object.keys(rows[0]);
+        const trHead = document.createElement('tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+
+        // Table rows
+        rows.forEach(row => {
+          const tr = document.createElement('tr');
+          headers.forEach(h => {
+            const td = document.createElement('td');
+            td.textContent = row[h];
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+
+        htmlTable.appendChild(thead);
+        htmlTable.appendChild(tbody);
+
+        tableDataDiv.innerHTML = ''; // clear old content
+        tableDataDiv.appendChild(htmlTable);
+      })
+      .catch(err => {
+        tableDataDiv.textContent = 'Error loading table data.';
+        console.error(err);
+      });
+  }
+</script>
+
+</body>
+</html>

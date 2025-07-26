@@ -1,0 +1,4 @@
+FROM nginx:1.29.0-alpine
+COPY src/html/index.html /usr/share/nginx/html/index.html
+
+EXPOSE 2277
