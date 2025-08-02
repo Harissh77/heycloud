@@ -1,15 +1,18 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
+CORS(app)
 
+# Read DB config from environment variables
 db_config = {
-    'host': 'heycloudDB',  # Changed from 'localhost' for Docker container access
-    'user': 'harish',
-    'password': 'harish1234',
-    'database': 'mydb'
+    'host': os.getenv('DB_HOST', 'mysql'),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD', ''),
+    'database': os.getenv('DB_NAME', 'test'),
+    'port': int(os.getenv('DB_PORT', 3306))
 }
 
 @app.route('/')
@@ -45,4 +48,4 @@ def get_table_data(table_name):
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)  # Listen on all interfaces
+    app.run(host='0.0.0.0', debug=True)
