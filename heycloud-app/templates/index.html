@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Directory</title>
+    <script>
+        async function showDetails(empId) {
+            const res = await fetch(`/employee/${empId}`);
+            const data = await res.json();
+            document.getElementById('details').innerHTML = `
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Employee ID:</strong> ${data.employee_id}</p>
+                <p><strong>Salary:</strong> $${data.salary}</p>
+                <p><strong>Department:</strong> ${data.department}</p>
+            `;
+        }
+    </script>
+</head>
+<body>
+    <h1>Employees</h1>
+    <ul>
+        {% for emp in employees %}
+            <li onclick="showDetails({{ emp.employee_id }})">
+                {{ emp.first_name }} {{ emp.last_name }}
+            </li>
+        {% endfor %}
+    </ul>
+    <div id="details">
+        <h2>Details</h2>
+        <!-- Employee details will appear here -->
+    </div>
+</body>
+</html>

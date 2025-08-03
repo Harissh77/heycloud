@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heycloudapp
+  labels:
+    app: heycloudapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: heycloudapp
+  template:
+    metadata:
+      labels:
+        app: heycloudapp
+    spec:
+      containers:
+        - name: heycloudapp
+          image: harissh77/heycloudapp:1.2
+          ports:
+            - containerPort: 5000  # Assuming your Flask app runs on port 5000
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: heycloud-db-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: heycloud-db-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: heycloud-db-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: heycloud-db-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: heycloud-db-secret
+                  key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: heycloudapp-service
+spec:
+  selector:
+    app: heycloudapp
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080           # Cluster-internal port
+      targetPort: 5000    # Container port (Flask app)
+      nodePort: 32277      # External port on node

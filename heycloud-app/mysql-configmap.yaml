@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heycloud-db-config
+  labels:
+    app: heycloud-app
+data:
+  DB_HOST: "mysql"     # MySQL host (can be a service name if in same cluster)
+  DB_NAME: "mydb"           # Database name
+  DB_PORT: "2727"
