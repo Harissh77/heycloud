@@ -30,7 +30,7 @@ def get_tables():
         conn.close()
         return jsonify(tables)
     except Exception as e:
-        print("Error occurred in /tables:", e)
+        app.logger.error(f"Error occurred in /tables: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/table-data/<table_name>')
@@ -44,8 +44,8 @@ def get_table_data(table_name):
         conn.close()
         return jsonify(rows)
     except Exception as e:
-        print(f"Error occurred in /table-data/{table_name}:", e)
+        app.logger.error(f"Error occurred in /table-data/{table_name}: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
